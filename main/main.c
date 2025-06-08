@@ -22,7 +22,7 @@
 /*----------------------------------*/
 // PROGRAM CONSTANTS
 /*----------------------------------*/
-// GPIO Pin Definitions
+// GPIO Pin 
 #define RED_PIN 26
 #define GREEN_PIN 27
 #define BUZZER_PIN 25
@@ -44,7 +44,6 @@
 #define GATE_OPEN_ANGLE 90
 #define GATE_CLOSED_ANGLE 0
 
-// State Machine -- UPDATED WITH NEW STATE
 enum State
 {
     IDLE,
@@ -100,7 +99,6 @@ void app_main(void)
                 currentState = TRAIN_APPROACHING;
 
                 gpio_set_level(GREEN_PIN, 0);
-                // Warning sequence
                 for (int i = 0; i < 3; i++)
                 {
                     gpio_set_level(RED_PIN, 1);
@@ -111,7 +109,7 @@ void app_main(void)
                     vTaskDelay(500 / portTICK_PERIOD_MS);
                 }
                 move_servo_to(GATE_CLOSED_ANGLE);
-                gpio_set_level(RED_PIN, 1); // Solid red after closing
+                gpio_set_level(RED_PIN, 1); 
             }
             break;
 
@@ -124,7 +122,6 @@ void app_main(void)
             break;
 
         case TRAIN_PASSING:
-            // MODIFIED: When train leaves crossing sensor, move to CLEARING state
             if (!crossing_detected)
             {
                 ESP_LOGI(TAG, "STATE: TRAIN_PASSING -> CLEARING_CROSSING");
@@ -132,30 +129,26 @@ void app_main(void)
             }
             break;
 
-        // NEW STATE: Implement the 5-second safety delay
         case CLEARING_CROSSING:
             ESP_LOGI(TAG, "Track clear. Starting 5-second safety delay.");
             bool safe_to_open = true;
-            // Flash red light for 5 seconds
             for (int i = 0; i < 5; i++)
             {
                 gpio_set_level(RED_PIN, 1);
                 vTaskDelay(500 / portTICK_PERIOD_MS);
                 gpio_set_level(RED_PIN, 0);
                 vTaskDelay(500 / portTICK_PERIOD_MS);
-
-                // SAFETY CHECK: Re-read sensor during delay. If a train appears, abort opening!
+                
                 adc_oneshot_read(adc1_handle, APPROACH_SENSOR_ADC_CHANNEL, &approach_sensor_val);
                 if (approach_sensor_val < SENSOR_THRESHOLD)
                 {
                     ESP_LOGE(TAG, "New train detected during clearing! Aborting gate open.");
-                    currentState = TRAIN_APPROACHING; // Go back to approaching state
+                    currentState = TRAIN_APPROACHING; 
                     safe_to_open = false;
-                    break; // Exit the for loop immediately
+                    break; 
                 }
             }
-
-            // Only open the gate if the delay completed without detecting a new train
+            
             if (safe_to_open)
             {
                 ESP_LOGI(TAG, "STATE: CLEARING_CROSSING -> IDLE");
@@ -170,7 +163,7 @@ void app_main(void)
 }
 
 /*----------------------------------*/
-// FUNCTION DEFINITIONS (These are unchanged)
+// FUNCTION DEFINITIONS 
 /*----------------------------------*/
 static void configure_peripherals(void)
 {
