@@ -1,0 +1,15 @@
+{
+    "C_Cpp.intelliSenseEngine": "default",
+    "idf.espIdfPath": "/Users/davidhout/esp/v5.4.1/esp-idf",
+    "idf.pythonInstallPath": "/usr/local/opt/python@3.12/libexec/bin/python",
+    "idf.openOcdConfigs": [
+        "board/esp32-bridge.cfg"
+    ],
+    "idf.port": "/dev/tty.usbserial-0001",
+    "idf.toolsPath": "/Users/davidhout/.espressif",
+    "files.associations": {
+        "*.embeddedhtml": "html",
+        "freertos.h": "c"
+    },
+    "idf.flashType": "UART"
+}
